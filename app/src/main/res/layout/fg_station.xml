@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/bg_gray"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/ly_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/bg_topbar">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/div_white" />
+
+        <TextView
+            android:id="@+id/txt_topbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:gravity="center"
+            android:textColor="@color/text_topbar"
+            android:textSize="20sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#E0E0E0">
+            <TextView
+                android:id="@+id/device_text"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="设备状态"
+                android:layout_marginLeft="5dp"
+                android:textColor="@color/bg_black"
+                android:gravity="left|center_vertical"
+                android:textSize="12sp" />
+
+            <ListView
+                android:id="@+id/device_listview"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/sensor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#E0E0E0">
+            <TextView
+                android:id="@+id/sensor_text"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="仪表状态"
+                android:layout_marginLeft="5dp"
+                android:gravity="left|center_vertical"
+                android:textColor="@color/bg_black"
+                android:textSize="12sp" />
+
+            <ListView
+                android:id="@+id/sensor_listview"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

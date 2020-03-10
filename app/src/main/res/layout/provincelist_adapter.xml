@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#E0E0E0"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/relativelayout"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/bg_white">
+
+        <TextView
+            android:id="@+id/province_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/next"
+            android:layout_marginStart="10dp"
+            android:layout_centerVertical="true"
+            android:text="provincename"
+            android:textColor="@color/bg_black"
+            android:textSize="18sp" />
+
+        <android.support.v7.widget.AppCompatImageButton
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_chevron_right_grey600_48dp" />
+
+    </RelativeLayout>
+</LinearLayout>
