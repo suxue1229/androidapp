@@ -134,6 +134,8 @@ public class HttpService {
         // 3.通过客户端执行请求,获得response
         Response response = client.newCall(request).execute();
         String str = response.body().string();
+
+
         gson=new Gson();
         if (response.isSuccessful()) {
             institutebean=gson.fromJson(str,Institutebean.class);

@@ -48,7 +48,8 @@
         android:layout_marginTop="5dp"
         android:layout_marginBottom="50dp"
         android:animateLayoutChanges="true"
-        android:background="#E0E0E0">
+        android:background="#E0E0E0"
+        >
 
         <ListView
             android:id="@+id/province_list"
@@ -63,7 +64,7 @@
             android:scrollingCache="false" />
     </RelativeLayout>
     <RelativeLayout
-        android:id="@+id/city_layout"
+        android:id="@+id/station_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/linearLayout1"
@@ -75,7 +76,7 @@
         android:background="#E0E0E0">
 
         <ListView
-            android:id="@+id/city_list"
+            android:id="@+id/station_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:cacheColorHint="#00000000"

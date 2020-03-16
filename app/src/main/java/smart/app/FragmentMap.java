@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,23 +41,19 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.search.core.SearchResult;
-import com.baidu.mapapi.search.geocode.GeoCodeResult;
-import com.baidu.mapapi.search.geocode.GeoCoder;
-import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.baidu.mapapi.utils.CoordinateConverter;
 
 
 import java.lang.ref.WeakReference;
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Set;
 
-
-public class FragmentMap extends Fragment implements View.OnClickListener,OnGetGeoCoderResultListener{
+public class FragmentMap extends Fragment implements View.OnClickListener{
 
     // 定位相关
     LocationClient mLocClient;
@@ -66,38 +63,29 @@ public class FragmentMap extends Fragment implements View.OnClickListener,OnGetG
 
     // UI相关
     LinearLayout linearLayout;////站点搜索输入框
-    RelativeLayout relativeLayout;//站点列表
+    RelativeLayout province_layout;//站点列表
+    RelativeLayout station_layout;//
     TextView search;
     ImageView list;
     ImageView mylocation;
     ListView province_list;
-    ListView city_list;
+    ListView station_list;
     boolean islocation = true;
     boolean isFirstLoc = true; // 是否首次定位
     boolean isVisible = true;//站点列表是否可见
     MyLocationData locData;
     Institutebean institutebean;
     ProvincelistAdapter arrayAdapter;
-    ArrayList<Institutebean.datainfo> datainfos;
-    LinearLayout startbutton;
+    InstitutelistAdapter instituteAdapter;
     MainActivity mainActivity;
     Institutebean.datainfo infoUtil;
-    Institutebean.datainfo datainfo;
-    ArrayList<Institutebean.datainfo> infos=new ArrayList<>();
     InfoWindow infoWindow=null;
 
     HashMap<String,ArrayList<Institutebean.datainfo>> station_province=new HashMap<>();
-//    HashMap<String,Province> provinces;
 
-    HashMap<ReverseGeoCodeResult,Institutebean.datainfo> province=new HashMap<>();
-    HashMap<String,String> provincename=new HashMap<>();
-//    Province province=null;
-    HashMap<ReverseGeoCodeResult,ArrayList<Institutebean.datainfo>> provinces=new HashMap();
+    ArrayList<String> province=new ArrayList<>();
 
-    HashMap<String,ReverseGeoCodeResult> results;
-
-    /*逆地理编码（即坐标转地址）*/
-    GeoCoder mCoder  = null;
+    ArrayList<String> provincename=new ArrayList<>();
 
     private static class MyHandler extends Handler {
         private final WeakReference<FragmentMap> mActivity;
@@ -120,76 +108,68 @@ public class FragmentMap extends Fragment implements View.OnClickListener,OnGetG
     private final Runnable sRunnable = new Runnable() {
         @Override
         public void run() {
-            datainfos = new ArrayList<>();
-            for (int i = 0; i < institutebean.data.size(); i++) {
-                datainfos.add(institutebean.data.get(i));
-                System.out.println(institutebean.data.get(i).getProvinceName());
+
+            addOverlay(institutebean.data);
+            for(int i=0;i<institutebean.data.size();i++){
+
+                String province_name;
+                if(institutebean.data.get(i).Address!=null &&!institutebean.data.get(i).Address.isEmpty()){
+                    province_name=institutebean.data.get(i).getProvince(institutebean.data.get(i).Address);
+                    provincename.add(province_name);
+
+                    ArrayList<Institutebean.datainfo> infos = station_province.get(province_name); //判断是否已经存在key
+                    if(infos == null){ //若不存在则创建List,并存进HashMap
+                        infos = new ArrayList<>();
+                        station_province.put(province_name, infos);
+                    }
+                    infos.add(institutebean.data.get(i)); //在key对应的value（list）中添加该key在初始List中的位置
+                }
+
             }
-//            System.out.println("size:"+institutebean.data.size()+"   province:"+province.size() +"  name:"+provincename.size());
 
-//            HashMap<String,ArrayList<Institutebean.datainfo>> stations=new HashMap<>();
-//            ArrayList<Institutebean.datainfo> datainfos;
-//            for(int j=0;j<provincename.size();j++){
-//                Iterator ite=provincename.entrySet().iterator();
-//                datainfos=new ArrayList<>();
-//                while(ite.hasNext()){
-//                    Map.Entry str=(Map.Entry)ite.next();
-////                    ReverseGeoCodeResult result=(ReverseGeoCodeResult)str.getValue();
-////                    System.out.println("str:"+str.getKey()+"     "+str.getValue());
-//                    for(int i=0;i< province.size();i++){
-//                        Iterator item=province.entrySet().iterator();
-//                        while(item.hasNext()){
-//                            Map.Entry string=(Map.Entry)item.next();
-//                            if(str.getValue().equals(string.getKey())){
-//                                System.out.println("string:"+string.getKey());
-//                                datainfos.add((Institutebean.datainfo)string.getValue());
-//                            }
-//                        }
-//                    }
-//                    System.out.println("    size:"+datainfos.size());
-//                    stations.put((String)str.getValue(),datainfos);
-//                }
-////                System.out.println("j:"+j);
-////                System.out.println("datainfos:"+datainfos.size());
-//            }
+
+
+            province=onlyList(provincename);
+
+            arrayAdapter = new ProvincelistAdapter(getActivity(), province);
+            province_list.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            province_list.setAdapter(arrayAdapter);
+            province_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    TextView txtview = view.findViewById(R.id.province_textview);
+                    String product = txtview.getText().toString();
+                    search.setText(product);
+                    province_layout.setVisibility(View.GONE);
+                    station_layout.setVisibility(View.VISIBLE);
+
+                    Set<String> keys = station_province.keySet();
+                    ArrayList<Institutebean.datainfo> station=new ArrayList<>();
+                        Iterator<String> iterator = keys.iterator();
+                        while(iterator.hasNext()) {
+                            String key = iterator.next();
+                            if(key.equals(product)){
+                                station = station_province.get(key);
+                            }
+                        }
+
+                    System.out.println("station:"+station.size());
+                    instituteAdapter=new InstitutelistAdapter(getActivity(), station);
+
+
+
+//                    // 改变地图状态，使地图显示在恰当的缩放大小
+//                    MapStatus mMapStatus = new MapStatus.Builder().zoom(18.0f).build();
+//                    MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+//                    mBaiduMap.setMapStatus(mMapStatusUpdate);
 //
-//            for (int i = 0; i <stations.size() ; i++) {
-//                Iterator it=stations.entrySet().iterator();
-//                while (it.hasNext()){
-//                    Map.Entry str=(Map.Entry)it.next();
-////                    System.out.println("str:"+str.getKey());
-////                    System.out.println("datainfos:"+str.getValue());
-//                }
-//            }
-
-
-//            arrayAdapter = new ProvincelistAdapter(getActivity(), province);
-//            province_list.setChoiceMode(ListView.CHOICE_MODE_SINGLE); //表明有选项，如果不设置，缺省为none，即我们点击后仍无反应
-//            province_list.setAdapter(arrayAdapter);
-//            province_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                @Override
-//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                    TextView txtview = view.findViewById(R.id.textView);
-//                    String product = txtview.getText().toString();
-//                    search.setText(product);
-//                    relativeLayout.setVisibility(View.GONE);
-//
-////                    // 改变地图状态，使地图显示在恰当的缩放大小
-////                    MapStatus mMapStatus = new MapStatus.Builder().zoom(18.0f).build();
-////                    MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-////                    mBaiduMap.setMapStatus(mMapStatusUpdate);
-////
-////                    LatLng latLng = transcoordinate(new LatLng(datainfos.get(position).Latitude, datainfos.get(position).Longitude));
-////                    MapStatusUpdate msu = MapStatusUpdateFactory.newLatLng(latLng);
-////                    mBaiduMap.setMapStatus(msu);
-//                }
-//            });
-//            arrayAdapter.notifyDataSetChanged();
-//              addOverlay(institutebean.data);
-//            System.out.println("provinces:"+provinces.size());
-//            for (int i = 0; i <provinces.size() ; i++) {
-//                System.out.println(provinces.get(i).getName());
-//            }
+//                    LatLng latLng = transcoordinate(new LatLng(datainfos.get(position).Latitude, datainfos.get(position).Longitude));
+//                    MapStatusUpdate msu = MapStatusUpdateFactory.newLatLng(latLng);
+//                    mBaiduMap.setMapStatus(msu);
+                }
+            });
+            arrayAdapter.notifyDataSetChanged();
         }
     };
 
@@ -205,18 +185,20 @@ public class FragmentMap extends Fragment implements View.OnClickListener,OnGetG
 
     private void init(View view) {
         initMap(view);
-        relativeLayout = view.findViewById(R.id.province_layout);
-        relativeLayout.setVisibility(View.GONE);
+        province_layout = view.findViewById(R.id.province_layout);
+        province_layout.setVisibility(View.GONE);
+        station_layout=view.findViewById(R.id.station_layout);
+        station_layout.setVisibility(View.GONE);
         linearLayout = view.findViewById(R.id.linearLayout1);
         linearLayout.setVisibility(View.VISIBLE);
         search = view.findViewById(R.id.search);
         list = view.findViewById(R.id.list);
         province_list = view.findViewById(R.id.province_list);
+        station_list=view.findViewById(R.id.station_list);
         mylocation = view.findViewById(R.id.mylocation);
         mylocation.setOnClickListener(this);
-        mCoder=GeoCoder.newInstance();
-        mCoder.setOnGetGeoCodeResultListener(this);
         list.setOnClickListener(this);
+
     }
 
     @Override
@@ -225,9 +207,9 @@ public class FragmentMap extends Fragment implements View.OnClickListener,OnGetG
             case R.id.list:
                 if (isVisible) {
                     isVisible = false;
-                    relativeLayout.setVisibility(View.VISIBLE);
+                    province_layout.setVisibility(View.VISIBLE);
                 } else {
-                    relativeLayout.setVisibility(View.GONE);
+                    province_layout.setVisibility(View.GONE);
                     isVisible = true;
                 }
                 break;
@@ -310,19 +292,14 @@ public class FragmentMap extends Fragment implements View.OnClickListener,OnGetG
         Marker marker;
         OverlayOptions options;
         ArrayList<LatLng> points = new ArrayList<>();
-        for (Institutebean.datainfo info : infos) {
+        for (final Institutebean.datainfo info : infos) {
             if (info.Type.equals("Normal")) {
                 bitmap = BitmapDescriptorFactory.fromResource(R.drawable.normalpic);
             } else if (info.Type.equals("Station")) {
                 bitmap = BitmapDescriptorFactory.fromResource(R.drawable.stationpic);
             }
-            this.datainfo=info;
             //获取经纬度
             desLatLng = transcoordinate(new LatLng(info.Latitude, info.Longitude));
-//            // 反Geo搜索
-//            mCoder.reverseGeoCode(new ReverseGeoCodeOption()
-//                    .location(desLatLng));
-
             points.add(desLatLng);
             //设置marker
             options = new MarkerOptions()
@@ -337,49 +314,53 @@ public class FragmentMap extends Fragment implements View.OnClickListener,OnGetG
             //info必须实现序列化接口
             bundle.putSerializable("info", info);
             marker.setExtraInfo(bundle);
+
+
+            //添加marker点击事件的监听
+            mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(final Marker marker) {
+
+                    LayoutInflater inflater = LayoutInflater.from(getActivity().getApplicationContext());
+                    View view = inflater.inflate(R.layout.maker_menu, null);
+                    view.setPadding(20, 5, 20, 5);
+                    TextView tv = view.findViewById(R.id.title);
+                    LinearLayout startbutton = view.findViewById(R.id.start);
+                    tv.setTextColor(Color.BLACK);
+                    //从marker中获取info信息
+                    Bundle bundle = marker.getExtraInfo();
+                    infoUtil = (Institutebean.datainfo) bundle.getSerializable("info");
+                    if (infoUtil.Name != null) tv.setText(infoUtil.Name);
+                    startbutton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Bundle bundle1 = new Bundle();
+                            bundle1.putSerializable("datainfo", infoUtil);
+                            mainActivity.fragmentList.get(1).setArguments(bundle1);
+                            mainActivity.adapter.notifyDataSetChanged();
+                            mainActivity.viewPager.setAdapter(mainActivity.adapter);
+                            mainActivity.viewPager.setCurrentItem(1);
+                            mainActivity.txt_map.setSelected(false);
+                            mainActivity.txt_station.setSelected(true);
+                            mainActivity.txt_myself.setSelected(false);
+                        }
+                    });
+                    //显示infowindow
+                    infoWindow = new InfoWindow(view, marker.getPosition(), -47);
+                    mBaiduMap.showInfoWindow(infoWindow);
+
+                    view.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mBaiduMap.hideInfoWindow();
+                        }
+                    });
+
+                    return true;
+                }
+            });
         }
-
-//        //将地图显示在最后一个marker的位置
-//        MapStatusUpdate msu = MapStatusUpdateFactory.newLatLng(desLatLng);
-//        mBaiduMap.setMapStatus(msu);
-        //添加marker点击事件的监听
-        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                //从marker中获取info信息
-                Bundle bundle = marker.getExtraInfo();
-                infoUtil = (Institutebean.datainfo) bundle.getSerializable("info");
-                LayoutInflater inflater = LayoutInflater.from(getActivity().getApplicationContext());
-                View view = inflater.inflate(R.layout.maker_menu, null);
-                view.setPadding(20, 5, 20, 5);
-                TextView tv = view.findViewById(R.id.title);
-                tv.setTextColor(Color.BLACK);
-                if (infoUtil.Name != null) tv.setText(infoUtil.Name);
-                startbutton = view.findViewById(R.id.start);
-                startbutton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Bundle bundle1 = new Bundle();
-                        bundle1.putSerializable("datainfo", infoUtil);
-                        mainActivity.fragmentList.get(1).setArguments(bundle1);
-                        mainActivity.adapter.notifyDataSetChanged();
-                        mainActivity.viewPager.setAdapter(mainActivity.adapter);
-                        mainActivity.viewPager.setCurrentItem(1);
-                        mainActivity.txt_map.setSelected(false);
-                        mainActivity.txt_station.setSelected(true);
-                        mainActivity.txt_myself.setSelected(false);
-                    }
-                });
-
-                LatLng latLng = transcoordinate(new LatLng(infoUtil.Latitude, infoUtil.Longitude));
-                //显示infowindow
-                infoWindow = new InfoWindow(view, latLng, -47);
-                mBaiduMap.showInfoWindow(infoWindow);
-                return true;
-            }
-        });
     }
-
 
     /**
      * 定位SDK监听函数
@@ -413,10 +394,6 @@ public class FragmentMap extends Fragment implements View.OnClickListener,OnGetG
             public void run() {
                 try {
                     institutebean = HttpService.instituteInfo();
-                    addOverlay(institutebean.data);
-                    for(int i=0;i<institutebean.data.size();i++){
-                        institutebean.data.get(i).getProvinceName();
-                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -426,7 +403,6 @@ public class FragmentMap extends Fragment implements View.OnClickListener,OnGetG
         }).start();
         if(infoUtil!=null){
             search.setText(infoUtil.Name);
-
             MapStatusUpdate msu = MapStatusUpdateFactory.newLatLng(transcoordinate(new LatLng(infoUtil.Latitude, infoUtil.Longitude)));
             mBaiduMap.setMapStatus(msu);
         }
@@ -458,7 +434,6 @@ public class FragmentMap extends Fragment implements View.OnClickListener,OnGetG
         mBaiduMap.setMyLocationEnabled(false);
         mMapView.onDestroy();
         mMapView = null;
-        mCoder.destroy();
         super.onDestroy();
     }
 
@@ -471,36 +446,18 @@ public class FragmentMap extends Fragment implements View.OnClickListener,OnGetG
         return converter.convert();
     }
 
-
-
-    @Override
-    public void onGetGeoCodeResult(GeoCodeResult result) {
-
-    }
-
-    @Override
-    public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
-        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
-            //没有找到检索结果
-            return;
-        } else {
-
-            province.put(result,this.datainfo);
-
-            if(!provincename.containsKey(result.getAddressDetail().province)){
-                provincename.put(result.getAddressDetail().province,result.getAddressDetail().province);
-            }
-
-
-//            results.put(result.getAddressDetail().province,result);
-//            if(!results.containsKey(result.getAddressDetail().province))
-//            {
-//                results.put(result.getAddressDetail().province,result);
-//            }
+    public ArrayList onlyList(ArrayList list){
+        ArrayList<String> list1 = new ArrayList<>();
+        Comparator<Object> com= Collator.getInstance(java.util.Locale.CHINA);//实现中文汉字按首字母排序
+        Iterator it = list.iterator();
+        while (it.hasNext()){
+            String s = (String) it.next();
+                if (!list1.contains(s)){    //判断list1中是否包括该元素
+                    list1.add(s);
+                }
         }
-
+        Collections.sort(list1, com);
+        return list1;
     }
-
-
 
 }

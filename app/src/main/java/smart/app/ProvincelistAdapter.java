@@ -22,9 +22,9 @@ import java.util.Map;
 public class ProvincelistAdapter extends BaseAdapter {
 
     private LayoutInflater mLayoutInflater;
-    private HashMap<String,Institutebean.datainfo> mData;
+    private ArrayList<String> mData;
 
-    public ProvincelistAdapter(Context mContext, HashMap<String,Institutebean.datainfo> mData) {
+    public ProvincelistAdapter(Context mContext, ArrayList<String> mData) {
         mLayoutInflater = LayoutInflater.from(mContext);
         this.mData = mData;
     }
@@ -57,12 +57,7 @@ public class ProvincelistAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        Iterator ite=mData.entrySet().iterator();
-        while(ite.hasNext()){
-            Map.Entry string=(Map.Entry)ite.next();
-            holder.province.setText(string.getKey().toString());
-        }
-//            ;
+            holder.province.setText(mData.get(position));
 
 //        holder.next_button.setOnClickListener(new View.OnClickListener() {
 //            @Override

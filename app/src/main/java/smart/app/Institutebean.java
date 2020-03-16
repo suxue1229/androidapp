@@ -1,16 +1,10 @@
 package smart.app;
 
-import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.search.core.SearchResult;
-import com.baidu.mapapi.search.geocode.GeoCodeResult;
-import com.baidu.mapapi.search.geocode.GeoCoder;
-import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
-import com.baidu.mapapi.utils.CoordinateConverter;
-
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Institutebean implements Serializable  {
@@ -19,7 +13,7 @@ public class Institutebean implements Serializable  {
     public ArrayList<datainfo> data;
 
 
-    public static class datainfo implements Serializable,OnGetGeoCoderResultListener {
+    public static class datainfo implements Serializable{
         public String Id;
         public String Name;
         public String Type;
@@ -29,53 +23,17 @@ public class Institutebean implements Serializable  {
         public String Address;
         public String Summary;
 
-        private String ProvinceName;
-
-
-        /*逆地理编码（即坐标转地址）*/
-        GeoCoder mCoder  = null;
-
-        public String getProvinceName(){
-            mCoder=GeoCoder.newInstance();
-            mCoder.setOnGetGeoCodeResultListener(this);
-            //获取经纬度
-           LatLng desLatLng = transcoordinate(new LatLng(Latitude, Longitude));
-            // 反Geo搜索
-            if(mCoder.reverseGeoCode(new ReverseGeoCodeOption()
-                    .location(desLatLng))) {
-                System.out.println("1111");
-                return this.ProvinceName;
+        //自治区+|上海|北京市|天津|重庆市|
+        public String getProvince(String adr){
+            String regex="([^省]+省|.+自治区+|上海市|北京市|天津市|重庆市)?([^市]+市|.+自治州)?([^县]+县|.+区|.+镇|.+局)?([^区]+区|.+镇)?(.*)";
+            Matcher m= Pattern.compile(regex).matcher(adr);
+            String province=null;
+            if(m.find()){
+                MatchResult result = m.toMatchResult();
+                province=result.group(1);
             }
-            return null;
-        }
-
-        public LatLng transcoordinate(LatLng lating) {
-            //将标准GPS坐标转为百度坐标
-            CoordinateConverter converter = new CoordinateConverter();
-            converter.from(CoordinateConverter.CoordType.GPS);
-            // sourceLatLng待转换坐标
-            converter.coord(lating);
-            return converter.convert();
-        }
-
-        @Override
-        public void onGetGeoCodeResult(GeoCodeResult result) {
-
-        }
-
-        @Override
-        public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
-            if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
-                //没有找到检索结果
-                return;
-            } else {
-               this.ProvinceName=result.getAddressDetail().province;
-               System.out.println("this.ProvinceName:"+this.ProvinceName);
-
+            return province;
             }
-
         }
-
-    }
 
 }
