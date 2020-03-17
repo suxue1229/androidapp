@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".Activity.MainActivity">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager_a"
@@ -20,19 +20,19 @@
 
             <fragment
                 android:id="@+id/fragment1"
-                android:name="smart.app.FragmentMap"
+                android:name="smart.app.Fragment.FragmentMap"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
             <fragment
                 android:id="@+id/fragment2"
-                android:name="smart.app.FragmentStation"
+                android:name="smart.app.Fragment.FragmentStation"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
             <fragment
                 android:id="@+id/fragment3"
-                android:name="smart.app.FragmentMyself"
+                android:name="smart.app.Fragment.FragmentMyself"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </FrameLayout>

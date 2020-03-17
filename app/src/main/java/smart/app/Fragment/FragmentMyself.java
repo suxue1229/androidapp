@@ -1,4 +1,4 @@
-package smart.app;
+package smart.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
+
+import smart.app.Network.HttpService;
+import smart.app.R;
+import smart.app.Activity.UpdataInfoActivity;
+import smart.app.bean.Accountbean;
 
 
 public class FragmentMyself extends Fragment implements View.OnClickListener {

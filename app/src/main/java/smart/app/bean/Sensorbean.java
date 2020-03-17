@@ -1,13 +1,15 @@
-package smart.app;
+package smart.app.bean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import smart.app.bean.Devicebean;
+
 public class Sensorbean implements Serializable {
 
     Devicebean devicebean;
-   ArrayList<sensorinfos> sensors=new ArrayList<>();
+    public ArrayList<sensorinfos> sensors=new ArrayList<>();
 
     public Sensorbean(Devicebean devicebean) {
         this.devicebean = devicebean;

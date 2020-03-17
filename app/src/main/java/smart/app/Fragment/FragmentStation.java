@@ -1,4 +1,4 @@
-package smart.app;
+package smart.app.Fragment;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +18,14 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import smart.app.Adapter.DeviceAdapter;
+import smart.app.Network.HttpService;
+import smart.app.Activity.MainActivity;
+import smart.app.R;
+import smart.app.bean.Devicebean;
+import smart.app.bean.Institutebean;
+import smart.app.bean.Sensorbean;
+
 public class FragmentStation extends Fragment {
     // UI Object
     TextView txt_topbar = null;
@@ -26,8 +34,8 @@ public class FragmentStation extends Fragment {
     Institutebean institutebean = null;
     Institutebean.datainfo datainfo = null;
     Devicebean devicebean = null;
-    DeviceListAdapter parentAdapter_status = null;
-    DeviceListAdapter parentAdapter_value = null;
+    DeviceAdapter parentAdapter_status = null;
+    DeviceAdapter parentAdapter_value = null;
     Sensorbean sensorbean;
     HashMap<String,ArrayList<Sensorbean.sensorinfos.sensorinfo>> sensorlist = null;
     ArrayList<Sensorbean.sensorinfos.sensorinfo> status_info=null;
@@ -88,8 +96,8 @@ public class FragmentStation extends Fragment {
 
                 }
 
-            parentAdapter_status = new DeviceListAdapter(getActivity(), status_info);
-            parentAdapter_value=new DeviceListAdapter(getActivity(),value_info);
+            parentAdapter_status = new DeviceAdapter(getActivity(), status_info);
+            parentAdapter_value=new DeviceAdapter(getActivity(),value_info);
             device_listView.setAdapter(parentAdapter_status);
             sensor_listView.setAdapter(parentAdapter_value);
         }

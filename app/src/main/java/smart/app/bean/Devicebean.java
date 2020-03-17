@@ -1,4 +1,4 @@
-package smart.app;
+package smart.app.bean;
 
 import java.io.Serializable;
 import java.util.ArrayList;

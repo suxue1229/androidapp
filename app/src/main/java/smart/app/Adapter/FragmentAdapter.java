@@ -1,4 +1,4 @@
-package smart.app;
+package smart.app.Adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -7,17 +7,17 @@ import android.view.View;
 
 import java.util.HashMap;
 
-public class MyPagerAdapter extends FragmentPagerAdapter {
+public class FragmentAdapter extends FragmentPagerAdapter {
 
-    private HashMap<Integer, Fragment> mfragmentList;
+    private HashMap<Integer, android.support.v4.app.Fragment> mfragmentList;
 
-    public MyPagerAdapter(FragmentManager fm, HashMap<Integer, Fragment> fragmentList) {
+    public FragmentAdapter(FragmentManager fm, HashMap<Integer, android.support.v4.app.Fragment> fragmentList) {
         super(fm);
         this.mfragmentList = fragmentList;
     }
 
     @Override
-    public Fragment getItem(int position) {
+    public android.support.v4.app.Fragment getItem(int position) {
         return mfragmentList.get(position);
     }
 

@@ -1,10 +1,8 @@
-package smart.app;
+package smart.app.Activity;
 
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
@@ -14,19 +12,26 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 
+import smart.app.Adapter.FragmentAdapter;
+import smart.app.Fragment.FragmentMap;
+import smart.app.Fragment.FragmentMyself;
+import smart.app.Fragment.FragmentStation;
+import smart.app.Network.MyBroadcaseReceiver;
+import smart.app.R;
+
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
     //UI Object
-    TextView txt_map;
-    TextView txt_station;
-    TextView txt_myself;
+    public TextView txt_map;
+    public TextView txt_station;
+    public TextView txt_myself;
 
     FragmentManager fManager;
     private MyBroadcaseReceiver myBroadcaseReceiver;
 
-    ViewPager viewPager;
-    HashMap<Integer, Fragment> fragmentList = new HashMap<>();
-    MyPagerAdapter adapter;
+    public ViewPager viewPager;
+    public HashMap<Integer, android.support.v4.app.Fragment> fragmentList = new HashMap<>();
+    public FragmentAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +56,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         fragmentList.put(1, new FragmentStation());
         fragmentList.put(2, new FragmentMyself());
 
-        adapter = new MyPagerAdapter(fManager, fragmentList);
+        adapter = new FragmentAdapter(fManager, fragmentList);
         viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(adapter);
 

@@ -5,7 +5,7 @@
 //import java.io.Serializable;
 //import java.util.ArrayList;
 //
-//import smart.app.Institutebean;
+//import smart.app.bean.Institutebean;
 //
 //public class Province implements Serializable {
 //

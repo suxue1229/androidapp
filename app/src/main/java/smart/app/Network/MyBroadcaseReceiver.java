@@ -1,4 +1,4 @@
-package smart.app;
+package smart.app.Network;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

@@ -1,4 +1,4 @@
-package smart.app;
+package smart.app.Adapter;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -10,12 +10,15 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class DeviceListAdapter extends BaseAdapter implements ListAdapter {
+import smart.app.R;
+import smart.app.bean.Sensorbean;
+
+public class DeviceAdapter extends BaseAdapter implements ListAdapter {
     private ArrayList<Sensorbean.sensorinfos.sensorinfo>  status_List;
     private Context context;
 //    private ArrayList<String> SensorId;
 
-    public DeviceListAdapter(Context context, ArrayList<Sensorbean.sensorinfos.sensorinfo>  status_List) {
+    public DeviceAdapter(Context context, ArrayList<Sensorbean.sensorinfos.sensorinfo>  status_List) {
         super();
         this.status_List = status_List;
         this.context = context;

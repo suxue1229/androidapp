@@ -1,11 +1,10 @@
-package smart.app;
+package smart.app.Fragment;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,9 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -40,11 +37,6 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.search.geocode.GeoCodeResult;
-import com.baidu.mapapi.search.geocode.GeoCoder;
-import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 
 import java.lang.ref.WeakReference;
 import java.text.Collator;
@@ -53,6 +45,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import smart.app.Adapter.ExtendableListViewAdapter;
+import smart.app.Network.HttpService;
+import smart.app.Activity.MainActivity;
+import smart.app.R;
+import smart.app.bean.Institutebean;
 
 public class FragmentMap extends Fragment implements View.OnClickListener{
 
@@ -161,7 +159,7 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
                     isVisible = true;
                 }
                 if(station_province.size()>0){
-                    expandableListView.setAdapter(new ExtendableListAdapter(getContext(),province,station_province));
+                    expandableListView.setAdapter(new ExtendableListViewAdapter(getContext(),province,station_province));
                     //设置分组的监听
                     expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
                         @Override
@@ -193,7 +191,7 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
                     expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
                         @Override
                         public void onGroupExpand(int groupPosition) {
-                            int count = new ExtendableListAdapter(getContext(),province,station_province).getGroupCount();
+                            int count = new ExtendableListViewAdapter(getContext(),province,station_province).getGroupCount();
                             for(int i = 0;i < count;i++){
                                 if (i!=groupPosition){
                                     expandableListView.collapseGroup(i);

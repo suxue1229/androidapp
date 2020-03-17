@@ -1,4 +1,4 @@
-package smart.app;
+package smart.app.Activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -21,6 +21,11 @@ import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
+import smart.app.Network.HttpService;
+import smart.app.R;
+import smart.app.bean.Institutebean;
+import smart.app.bean.Userbean;
+
 public class LoadActivity extends Activity implements View.OnClickListener {
     // UI Object
     private EditText username;
@@ -31,7 +36,7 @@ public class LoadActivity extends Activity implements View.OnClickListener {
     //声明一个SharedPreferences对象和一个Editor对象
     SharedPreferences preferences;
     private SharedPreferences.Editor editor;
-    User user;
+    Userbean user;
     String message;
 
     private static class handler extends Handler {
@@ -131,7 +136,7 @@ public class LoadActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        user = new User();
+        user = new Userbean();
         user.setName(username.getText().toString().trim());
         user.setPassword(password.getText().toString().trim());
         switch (v.getId()) {

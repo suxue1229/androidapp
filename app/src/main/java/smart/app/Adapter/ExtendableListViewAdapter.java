@@ -1,4 +1,4 @@
-package smart.app;
+package smart.app.Adapter;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
@@ -14,13 +14,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-public class ExtendableListAdapter extends BaseExpandableListAdapter {
+import smart.app.bean.Institutebean;
+import smart.app.R;
+
+public class ExtendableListViewAdapter extends BaseExpandableListAdapter {
     private Context mcontext;
     private LayoutInflater mLayoutInflater;
     private ArrayList<String> groups;
     private HashMap<String,ArrayList<Institutebean.datainfo>>  stations;
 
-    public ExtendableListAdapter(Context mContext, ArrayList<String> groups, HashMap<String,ArrayList<Institutebean.datainfo>> stations) {
+    public ExtendableListViewAdapter(Context mContext, ArrayList<String> groups, HashMap<String,ArrayList<Institutebean.datainfo>> stations) {
         this.mcontext=mContext;
         this.mLayoutInflater = LayoutInflater.from(mContext);
         this.groups=groups;

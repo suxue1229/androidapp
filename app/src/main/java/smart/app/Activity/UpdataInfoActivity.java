@@ -1,7 +1,6 @@
-package smart.app;
+package smart.app.Activity;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,10 +10,12 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
-import java.util.Timer;
+
+import smart.app.Network.HttpService;
+import smart.app.R;
+import smart.app.bean.Accountbean;
 
 
 public class UpdataInfoActivity extends Activity implements View.OnClickListener {

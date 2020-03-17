@@ -1,6 +1,6 @@
-package smart.app;
+package smart.app.bean;
 
-public class User {
+public class Userbean {
     private String name;
     private String password;
 

@@ -1,34 +1,26 @@
-package smart.app;
+package smart.app.Network;
 
 
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import smart.app.bean.Accountbean;
+import smart.app.bean.Devicebean;
+import smart.app.bean.Institutebean;
 
 public class HttpService {
-    static long mLastActionTime; // 上一次操作时间
-    static HashMap<String, Object> hashMap = new HashMap<>();
-    static Accountbean accountbean=new Accountbean();
-    static Institutebean institutebean=new Institutebean();
+    public static long mLastActionTime; // 上一次操作时间
+    public static HashMap<String, Object> hashMap = new HashMap<>();
+    public static  Accountbean accountbean=new Accountbean();
+    public static Institutebean institutebean=new Institutebean();
 
 
     static OkHttpClient client = new OkHttpClient();// 1.声明okhttp客户端
