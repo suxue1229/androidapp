@@ -90,7 +90,7 @@ public class LoadActivity extends Activity implements View.OnClickListener {
                     try {
                         if (HttpService.authorize(username.getText().toString().trim(),
                                 password.getText().toString().trim())) {
-                            Institutebean gsonobject = HttpService.institutelists();
+                            Institutebean gsonobject = HttpService.instituteInfo();
                             Intent intent = new Intent(LoadActivity.this, MainActivity.class);
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("gsonobject", gsonobject);
@@ -141,7 +141,6 @@ public class LoadActivity extends Activity implements View.OnClickListener {
                     public void run() {
                         Looper.prepare();
                         if (isConnect(getApplicationContext())) {
-//                            message = "网络连接成功！";
                             // 验证密码、成功则跳转到MainActivity，否则提示用户名、密码不正确
                             if (user.getName().equals("") || user.getPassword().equals("")) {
                                 message = "用户名或者密码不能为空";
@@ -149,7 +148,7 @@ public class LoadActivity extends Activity implements View.OnClickListener {
                                 try {
                                     if (HttpService.authorize(username.getText().toString().trim(),
                                             password.getText().toString().trim())) {
-                                        Institutebean gsonobject = HttpService.institutelists();
+                                        Institutebean gsonobject = HttpService.instituteInfo();
                                         Intent intent = new Intent(LoadActivity.this, MainActivity.class);
                                         Bundle bundle = new Bundle();
                                         bundle.putSerializable("gsonobject", gsonobject);

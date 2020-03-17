@@ -5,20 +5,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,8 +40,11 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.utils.CoordinateConverter;
-
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 
 import java.lang.ref.WeakReference;
 import java.text.Collator;
@@ -51,7 +53,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
 
 public class FragmentMap extends Fragment implements View.OnClickListener{
 
@@ -63,29 +64,23 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
 
     // UI相关
     LinearLayout linearLayout;////站点搜索输入框
-    RelativeLayout province_layout;//站点列表
-    RelativeLayout station_layout;//
     TextView search;
     ImageView list;
+    ExpandableListView expandableListView;
     ImageView mylocation;
-    ListView province_list;
-    ListView station_list;
     boolean islocation = true;
     boolean isFirstLoc = true; // 是否首次定位
     boolean isVisible = true;//站点列表是否可见
     MyLocationData locData;
     Institutebean institutebean;
-    ProvincelistAdapter arrayAdapter;
-    InstitutelistAdapter instituteAdapter;
     MainActivity mainActivity;
     Institutebean.datainfo infoUtil;
     InfoWindow infoWindow=null;
 
-    HashMap<String,ArrayList<Institutebean.datainfo>> station_province=new HashMap<>();
-
     ArrayList<String> province=new ArrayList<>();
 
     ArrayList<String> provincename=new ArrayList<>();
+    HashMap<String,ArrayList<Institutebean.datainfo>> station_province;
 
     private static class MyHandler extends Handler {
         private final WeakReference<FragmentMap> mActivity;
@@ -108,8 +103,8 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
     private final Runnable sRunnable = new Runnable() {
         @Override
         public void run() {
-
             addOverlay(institutebean.data);
+            station_province=new HashMap<>();
             for(int i=0;i<institutebean.data.size();i++){
 
                 String province_name;
@@ -126,50 +121,8 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
                 }
 
             }
-
-
-
             province=onlyList(provincename);
 
-            arrayAdapter = new ProvincelistAdapter(getActivity(), province);
-            province_list.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-            province_list.setAdapter(arrayAdapter);
-            province_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    TextView txtview = view.findViewById(R.id.province_textview);
-                    String product = txtview.getText().toString();
-                    search.setText(product);
-                    province_layout.setVisibility(View.GONE);
-                    station_layout.setVisibility(View.VISIBLE);
-
-                    Set<String> keys = station_province.keySet();
-                    ArrayList<Institutebean.datainfo> station=new ArrayList<>();
-                        Iterator<String> iterator = keys.iterator();
-                        while(iterator.hasNext()) {
-                            String key = iterator.next();
-                            if(key.equals(product)){
-                                station = station_province.get(key);
-                            }
-                        }
-
-                    System.out.println("station:"+station.size());
-                    instituteAdapter=new InstitutelistAdapter(getActivity(), station);
-
-
-
-//                    // 改变地图状态，使地图显示在恰当的缩放大小
-//                    MapStatus mMapStatus = new MapStatus.Builder().zoom(18.0f).build();
-//                    MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-//                    mBaiduMap.setMapStatus(mMapStatusUpdate);
-//
-//                    LatLng latLng = transcoordinate(new LatLng(datainfos.get(position).Latitude, datainfos.get(position).Longitude));
-//                    MapStatusUpdate msu = MapStatusUpdateFactory.newLatLng(latLng);
-//                    mBaiduMap.setMapStatus(msu);
-                }
-            });
-            arrayAdapter.notifyDataSetChanged();
         }
     };
 
@@ -185,20 +138,15 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
 
     private void init(View view) {
         initMap(view);
-        province_layout = view.findViewById(R.id.province_layout);
-        province_layout.setVisibility(View.GONE);
-        station_layout=view.findViewById(R.id.station_layout);
-        station_layout.setVisibility(View.GONE);
         linearLayout = view.findViewById(R.id.linearLayout1);
         linearLayout.setVisibility(View.VISIBLE);
         search = view.findViewById(R.id.search);
         list = view.findViewById(R.id.list);
-        province_list = view.findViewById(R.id.province_list);
-        station_list=view.findViewById(R.id.station_list);
+        expandableListView = view.findViewById(R.id.expend_list);
+        expandableListView.setVisibility(View.GONE);
         mylocation = view.findViewById(R.id.mylocation);
         mylocation.setOnClickListener(this);
         list.setOnClickListener(this);
-
     }
 
     @Override
@@ -207,10 +155,53 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
             case R.id.list:
                 if (isVisible) {
                     isVisible = false;
-                    province_layout.setVisibility(View.VISIBLE);
+                    expandableListView.setVisibility(View.VISIBLE);
                 } else {
-                    province_layout.setVisibility(View.GONE);
+                    expandableListView.setVisibility(View.GONE);
                     isVisible = true;
+                }
+                if(station_province.size()>0){
+                    expandableListView.setAdapter(new ExtendableListAdapter(getContext(),province,station_province));
+                    //设置分组的监听
+                    expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+                        @Override
+                        public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+                            return false;
+                        }
+                    });
+                    //设置子项布局监听
+                    expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+                        @Override
+                        public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                            ArrayList<Institutebean.datainfo> station=station_province.get(province.get(groupPosition));
+
+                            search.setText(station.get(childPosition).Name);
+                            expandableListView.setVisibility(View.GONE);
+                            // 改变地图状态，使地图显示在恰当的缩放大小
+                            MapStatus mMapStatus = new MapStatus.Builder().zoom(18.0f).build();
+                            MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+                            mBaiduMap.setMapStatus(mMapStatusUpdate);
+
+                            LatLng latLng = station.get(childPosition).getLatLng(station.get(childPosition).Latitude, station.get(childPosition).Longitude);
+                            MapStatusUpdate msu = MapStatusUpdateFactory.newLatLng(latLng);
+                            mBaiduMap.setMapStatus(msu);
+                            return true;
+
+                        }
+                    });
+                    //控制他只能打开一个组
+                    expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+                        @Override
+                        public void onGroupExpand(int groupPosition) {
+                            int count = new ExtendableListAdapter(getContext(),province,station_province).getGroupCount();
+                            for(int i = 0;i < count;i++){
+                                if (i!=groupPosition){
+                                    expandableListView.collapseGroup(i);
+                                }
+                            }
+                        }
+                    });
+
                 }
                 break;
             case R.id.mylocation:
@@ -299,8 +290,9 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
                 bitmap = BitmapDescriptorFactory.fromResource(R.drawable.stationpic);
             }
             //获取经纬度
-            desLatLng = transcoordinate(new LatLng(info.Latitude, info.Longitude));
+            desLatLng = info.getLatLng(info.Latitude,info.Longitude);
             points.add(desLatLng);
+
             //设置marker
             options = new MarkerOptions()
                     .position(desLatLng)//设置位置
@@ -315,12 +307,10 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
             bundle.putSerializable("info", info);
             marker.setExtraInfo(bundle);
 
-
             //添加marker点击事件的监听
             mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(final Marker marker) {
-
                     LayoutInflater inflater = LayoutInflater.from(getActivity().getApplicationContext());
                     View view = inflater.inflate(R.layout.maker_menu, null);
                     view.setPadding(20, 5, 20, 5);
@@ -334,15 +324,16 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
                     startbutton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            search.setText(infoUtil.Name);
                             Bundle bundle1 = new Bundle();
                             bundle1.putSerializable("datainfo", infoUtil);
                             mainActivity.fragmentList.get(1).setArguments(bundle1);
-                            mainActivity.adapter.notifyDataSetChanged();
                             mainActivity.viewPager.setAdapter(mainActivity.adapter);
                             mainActivity.viewPager.setCurrentItem(1);
                             mainActivity.txt_map.setSelected(false);
                             mainActivity.txt_station.setSelected(true);
                             mainActivity.txt_myself.setSelected(false);
+                            mainActivity.adapter.notifyDataSetChanged();
                         }
                     });
                     //显示infowindow
@@ -355,7 +346,6 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
                             mBaiduMap.hideInfoWindow();
                         }
                     });
-
                     return true;
                 }
             });
@@ -397,13 +387,11 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
                 mHandler.post(sRunnable);
             }
         }).start();
         if(infoUtil!=null){
-            search.setText(infoUtil.Name);
-            MapStatusUpdate msu = MapStatusUpdateFactory.newLatLng(transcoordinate(new LatLng(infoUtil.Latitude, infoUtil.Longitude)));
+            MapStatusUpdate msu = MapStatusUpdateFactory.newLatLng(infoUtil.getLatLng(infoUtil.Latitude, infoUtil.Longitude));
             mBaiduMap.setMapStatus(msu);
         }
         super.onStart();
@@ -437,14 +425,6 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
         super.onDestroy();
     }
 
-    public LatLng transcoordinate(LatLng lating) {
-        //将标准GPS坐标转为百度坐标
-        CoordinateConverter converter = new CoordinateConverter();
-        converter.from(CoordinateConverter.CoordType.GPS);
-        // sourceLatLng待转换坐标
-        converter.coord(lating);
-        return converter.convert();
-    }
 
     public ArrayList onlyList(ArrayList list){
         ArrayList<String> list1 = new ArrayList<>();

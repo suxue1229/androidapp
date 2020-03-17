@@ -70,7 +70,6 @@ public class FragmentStation extends Fragment {
                         status_info.add(sensorbean.sensors.get(i).sensor.get("status").get(j));
                     }
                 }catch(Exception e){
-//                    System.out.println("【ERROR1】：hashMap的[value]不能为null");
                 }
 
                 try {
@@ -78,7 +77,6 @@ public class FragmentStation extends Fragment {
                         value_info.add(sensorbean.sensors.get(i).sensor.get("value1").get(n));
                     }
                 }catch(Exception e){
-//                    System.out.println("【ERROR2】：hashMap的[value]不能为null");
                 }
 
                 try {
@@ -86,7 +84,6 @@ public class FragmentStation extends Fragment {
                         value_info.add(sensorbean.sensors.get(i).sensor.get("value2").get(m));
                     }
                 }catch(Exception e){
-//                    System.out.println("【ERROR3】：hashMap的[value]不能为null");
                 }
 
                 }

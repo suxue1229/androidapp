@@ -38,55 +38,19 @@
             android:textSize="16sp" />
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/province_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/linearLayout1"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="50dp"
-        android:animateLayoutChanges="true"
-        android:background="#E0E0E0"
-        >
-
-        <ListView
-            android:id="@+id/province_list"
+        <ExpandableListView
+            android:layoutDirection="rtl"
+            android:id="@+id/expend_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:cacheColorHint="#00000000"
-            android:divider="#e8e8e8"
-            android:dividerHeight="1dp"
-            android:fadingEdge="none"
-            android:listSelector="@android:color/transparent"
-            android:scrollbars="none"
-            android:scrollingCache="false" />
-    </RelativeLayout>
-    <RelativeLayout
-        android:id="@+id/station_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/linearLayout1"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="50dp"
-        android:animateLayoutChanges="true"
-        android:background="#E0E0E0">
-
-        <ListView
-            android:id="@+id/station_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:cacheColorHint="#00000000"
-            android:divider="#e8e8e8"
-            android:dividerHeight="1dp"
-            android:fadingEdge="none"
-            android:listSelector="@android:color/transparent"
-            android:scrollbars="none"
-            android:scrollingCache="false" />
-    </RelativeLayout>
+            android:layout_below="@+id/linearLayout1"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:animateLayoutChanges="true"
+            android:background="#E0E0E0"
+            android:groupIndicator="@null"
+            ></ExpandableListView>
 
     <RelativeLayout
         android:layout_width="wrap_content"

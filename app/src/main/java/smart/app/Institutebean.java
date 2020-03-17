@@ -1,5 +1,8 @@
 package smart.app;
 
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.CoordinateConverter;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.regex.MatchResult;
@@ -34,6 +37,17 @@ public class Institutebean implements Serializable  {
             }
             return province;
             }
+        public LatLng getLatLng(float lat,float lon){
+            return transcoordinate(new LatLng(lat,lon));
         }
+        public LatLng transcoordinate(LatLng lating) {
+            //将标准GPS坐标转为百度坐标
+            CoordinateConverter converter = new CoordinateConverter();
+            converter.from(CoordinateConverter.CoordType.GPS);
+            // sourceLatLng待转换坐标
+            converter.coord(lating);
+            return converter.convert();
+        }
+    }
 
 }
