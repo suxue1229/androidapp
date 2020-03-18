@@ -62,14 +62,17 @@ public class Sensorbean implements Serializable {
             ArrayList<sensorinfos.sensorinfo> status_info=new ArrayList<>();
             ArrayList<sensorinfos.sensorinfo> value1_info=new ArrayList<>();
             ArrayList<sensorinfos.sensorinfo> value2_info=new ArrayList<>();
+
                 for (int m = 0; m < devicebean.data.Groups.get(i).Devices.size(); m++) {
+                    String val=devicebean.data.Groups.get(i).Devices.get(m).getStatus().substring(devicebean.data.Groups.get(i).Devices.get(m).getStatus().indexOf("}")+1);
                     sensorinfos.sensorinfo sensorinfo =new sensorinfos.sensorinfo();
                     sensorinfo.setName(devicebean.data.Groups.get(i).Devices.get(m).getName());
                     sensorinfo.setEditable(devicebean.data.Groups.get(i).Devices.get(m).isEditable());
-                    sensorinfo.setValue(devicebean.data.Groups.get(i).Devices.get(m).getStatus().substring(devicebean.data.Groups.get(i).Devices.get(m).getStatus().indexOf("}")+1));
+                    sensorinfo.setValue(val);
                     sensorinfo.setId(devicebean.data.Groups.get(i).Devices.get(m).getId());
                     status_info.add(m,sensorinfo);
                     sensor.put("status",status_info);
+
                     for (int n = 0; n <devicebean.data.Groups.get(i).Devices.get(m).Sensors.size() ; n++) {
                         sensorinfos.sensorinfo sensorinfo1 = new sensorinfos.sensorinfo();
                         sensorinfo1.setName(devicebean.data.Groups.get(i).Devices.get(m).Sensors.get(n).getName());

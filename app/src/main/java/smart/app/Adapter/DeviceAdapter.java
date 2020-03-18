@@ -16,13 +16,11 @@ import smart.app.bean.Sensorbean;
 public class DeviceAdapter extends BaseAdapter implements ListAdapter {
     private ArrayList<Sensorbean.sensorinfos.sensorinfo>  status_List;
     private Context context;
-//    private ArrayList<String> SensorId;
 
     public DeviceAdapter(Context context, ArrayList<Sensorbean.sensorinfos.sensorinfo>  status_List) {
         super();
         this.status_List = status_List;
         this.context = context;
-//        this.SensorId = SensorId;
     }
 
     @Override
@@ -75,9 +73,11 @@ public class DeviceAdapter extends BaseAdapter implements ListAdapter {
         vh.id_unit.setText(bean.Unit);
 
         if(vh.id_value.getText().toString().equals("停止")){
-            vh.id_value.setTextColor(Color.RED);
+            vh.id_value.setTextColor(Color.GRAY);
         }else if(vh.id_value.getText().toString().equals("运行")){
             vh.id_value.setTextColor(Color.GREEN);
+        }else if(vh.id_value.getText().toString().equals("故障")){
+            vh.id_value.setTextColor(Color.RED);
         }
         return convertView;
     }

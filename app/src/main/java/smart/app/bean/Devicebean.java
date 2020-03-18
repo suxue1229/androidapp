@@ -12,12 +12,22 @@ public class Devicebean implements Serializable {
         public String Id;
         public String Name;
         public String Type;
+        public String getFlag() {
+            return Flag;
+        }
+
+        public void setFlag(String flag) {
+            Flag = flag;
+        }
+
+        public String Flag;
         public ArrayList<groupsinfo> Groups;
 
         public class groupsinfo implements Serializable {
             public String Id;
             public String Name;
             public int Count;
+
             public ArrayList<devicesinfo> Devices;
             public ArrayList<sensorsinfo> Sensors = new ArrayList<>();
 

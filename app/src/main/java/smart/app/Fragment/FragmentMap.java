@@ -50,7 +50,9 @@ import smart.app.Adapter.ExtendableListViewAdapter;
 import smart.app.Network.HttpService;
 import smart.app.Activity.MainActivity;
 import smart.app.R;
+import smart.app.bean.Devicebean;
 import smart.app.bean.Institutebean;
+import smart.app.bean.Sensorbean;
 
 public class FragmentMap extends Fragment implements View.OnClickListener{
 
@@ -79,6 +81,7 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
 
     ArrayList<String> provincename=new ArrayList<>();
     HashMap<String,ArrayList<Institutebean.datainfo>> station_province;
+    private Devicebean devicebean;
 
     private static class MyHandler extends Handler {
         private final WeakReference<FragmentMap> mActivity;
@@ -104,7 +107,7 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
             addOverlay(institutebean.data);
             station_province=new HashMap<>();
             for(int i=0;i<institutebean.data.size();i++){
-
+              final Institutebean.datainfo datainfo=institutebean.data.get(i);
                 String province_name;
                 if(institutebean.data.get(i).Address!=null &&!institutebean.data.get(i).Address.isEmpty()){
                     province_name=institutebean.data.get(i).getProvince(institutebean.data.get(i).Address);
@@ -116,6 +119,18 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
                         station_province.put(province_name, infos);
                     }
                     infos.add(institutebean.data.get(i)); //在key对应的value（list）中添加该key在初始List中的位置
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //刷新数据
+                            try {
+                                devicebean = HttpService.deviceinfo(datainfo.Id);
+                                datainfo.setFlagName(devicebean);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
                 }
 
             }
@@ -141,7 +156,6 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
         search = view.findViewById(R.id.search);
         list = view.findViewById(R.id.list);
         expandableListView = view.findViewById(R.id.expend_list);
-        expandableListView.setVisibility(View.GONE);
         mylocation = view.findViewById(R.id.mylocation);
         mylocation.setOnClickListener(this);
         list.setOnClickListener(this);
@@ -172,9 +186,9 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
                         @Override
                         public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                             ArrayList<Institutebean.datainfo> station=station_province.get(province.get(groupPosition));
-
                             search.setText(station.get(childPosition).Name);
                             expandableListView.setVisibility(View.GONE);
+
                             // 改变地图状态，使地图显示在恰当的缩放大小
                             MapStatus mMapStatus = new MapStatus.Builder().zoom(18.0f).build();
                             MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);

@@ -113,30 +113,6 @@ public class HttpService {
         return false;
     }
 
-//    public static Institutebean institutelists() throws Exception {
-//        if (System.currentTimeMillis() - mLastActionTime > (int) hashMap.get("expires_in") * 1000) {
-//            refreshtoken();
-//            mLastActionTime = System.currentTimeMillis();
-//        }
-//        url=new StringBuilder();
-//        url.append(http_path);
-//        url.append("institute");
-//        Request request = new Request.Builder().addHeader("Authorization", hashMap.get("token_type") + " " + hashMap.get("access_token"))
-//                .url(url.toString()).build();
-//        // 3.通过客户端执行请求,获得response
-//        Response response = client.newCall(request).execute();
-//        String str = response.body().string();
-//
-//
-//        gson=new Gson();
-//        if (response.isSuccessful()) {
-//            institutebean=gson.fromJson(str,Institutebean.class);
-//            if(institutebean.status == 0) {
-//                return institutebean;
-//            }
-//        }
-//        return null;
-//    }
 
     public static Institutebean instituteInfo() throws Exception {
         if (System.currentTimeMillis() - mLastActionTime > (int) hashMap.get("expires_in") * 1000) {
@@ -161,26 +137,6 @@ public class HttpService {
         return null;
     }
 
-
-//    public static HashMap<String, Object> devicesdata(String id, String type) throws Exception {
-//        if (System.currentTimeMillis() - mLastActionTime > ((int) hashMap.get("expires_in") * 1000)) {
-//            refreshtoken();
-//            mLastActionTime = System.currentTimeMillis();
-//        }
-//        url = new StringBuilder();
-//        url.append(http_path+"data/");
-//        url.append(id);
-//        url.append("?type=" + type);
-//        Request request = new Request.Builder().addHeader("Authorization", hashMap.get("token_type") + " " + hashMap.get("access_token"))
-//                .url(url.toString()).build();
-//        // 3.通过客户端执行请求,获得response
-//        Response response = client.newCall(request).execute();
-//        String str = response.body().string();
-//        if (response.isSuccessful()) {
-//            hashMap.put("str", str);
-//        }
-//        return hashMap;
-//    }
 
 
     public static Devicebean deviceinfo(String id) throws Exception {

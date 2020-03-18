@@ -19,6 +19,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import smart.app.Adapter.DeviceAdapter;
+import smart.app.Adapter.ExtendableListViewAdapter;
 import smart.app.Network.HttpService;
 import smart.app.Activity.MainActivity;
 import smart.app.R;

@@ -1,6 +1,8 @@
 package smart.app.Adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,15 +15,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import smart.app.Network.HttpService;
+import smart.app.bean.Devicebean;
 import smart.app.bean.Institutebean;
 import smart.app.R;
+import smart.app.bean.Sensorbean;
 
 public class ExtendableListViewAdapter extends BaseExpandableListAdapter {
     private Context mcontext;
     private LayoutInflater mLayoutInflater;
     private ArrayList<String> groups;
     private HashMap<String,ArrayList<Institutebean.datainfo>>  stations;
+    private Devicebean devicebean;
 
     public ExtendableListViewAdapter(Context mContext, ArrayList<String> groups, HashMap<String,ArrayList<Institutebean.datainfo>> stations) {
         this.mcontext=mContext;
@@ -108,9 +116,9 @@ public class ExtendableListViewAdapter extends BaseExpandableListAdapter {
         groupViewHolder.province_textview.setText(groups.get(groupPosition));
         //如果是展开状态，
         if (isExpanded){
-            groupViewHolder.parent_image.setImageDrawable(ContextCompat.getDrawable(mcontext,R.drawable.ic_keyboard_arrow_down_black_36dp));
+            groupViewHolder.parent_image.setImageDrawable(ContextCompat.getDrawable(mcontext,R.drawable.ic_keyboard_arrow_down_grey600_24dp));
         }else{
-            groupViewHolder.parent_image.setImageDrawable(ContextCompat.getDrawable(mcontext,R.drawable.ic_keyboard_arrow_right_black_36dp));
+            groupViewHolder.parent_image.setImageDrawable(ContextCompat.getDrawable(mcontext,R.drawable.ic_keyboard_arrow_right_grey600_24dp));
         }
         return convertView;
     }
@@ -128,22 +136,41 @@ public class ExtendableListViewAdapter extends BaseExpandableListAdapter {
      *      android.view.ViewGroup)
      */
 
+   Handler handler = new Handler();
+
+
     //取得显示给定分组给定子位置的数据用的视图
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         ChildViewHolder childViewHolder;
+         Institutebean.datainfo datainfo=getchilds(groups.get(groupPosition)).get(childPosition);
+
         if (convertView==null){
             convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.child_item,parent,false);
             childViewHolder = new ChildViewHolder();
             childViewHolder.station_name = convertView.findViewById(R.id.station_name);
             childViewHolder.address = convertView.findViewById(R.id.address);
+            childViewHolder.status=convertView.findViewById(R.id.status);
+
             convertView.setTag(childViewHolder);
 
         }else {
             childViewHolder = (ChildViewHolder) convertView.getTag();
         }
-        childViewHolder.station_name.setText(getchilds(groups.get(groupPosition)).get(childPosition).Name);
-        childViewHolder.address.setText(getchilds(groups.get(groupPosition)).get(childPosition).Address);
+        childViewHolder.station_name.setText(datainfo.Name);
+        childViewHolder.address.setText(datainfo.Address);
+
+        if(datainfo.getFlagName().equals("故障")){
+            childViewHolder.status.setText("故障");
+            childViewHolder.status.setBackgroundColor(Color.RED);
+        }else if(datainfo.getFlagName().equals("停止")){
+            childViewHolder.status.setText("停止");
+            childViewHolder.status.setBackgroundColor(Color.GRAY);
+        }else if(datainfo.getFlagName().equals("运行")){
+            childViewHolder.status.setText("运行");
+            childViewHolder.status.setBackgroundColor(Color.GREEN);
+        }
+
         return convertView;
     }
 
@@ -161,6 +188,7 @@ public class ExtendableListViewAdapter extends BaseExpandableListAdapter {
     static class ChildViewHolder {
         TextView station_name;
         TextView address;
+        TextView status;
 
     }
 }

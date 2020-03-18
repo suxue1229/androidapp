@@ -123,12 +123,9 @@ public class FragmentMyself extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-//        Bundle bundle = new Bundle();
         switch (v.getId()) {
             case R.id.edit:
                 Intent intent = new Intent(getActivity(), UpdataInfoActivity.class);
-//                bundle.putSerializable("accountbean", accountbean);
-//                intent.putExtras(bundle);
                 startActivity(intent);
                 break;
             case R.id.exit:
