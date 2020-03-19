@@ -6,14 +6,11 @@ import android.content.Intent;
 
 import android.annotation.SuppressLint;
 
-import java.util.ArrayList;
-
 import smart.app.Interface.EventHandle;
 
 
 @SuppressLint("NewApi")
 public class MyBroadcaseReceiver extends BroadcastReceiver {
-//    public static ArrayList<EventHandler> ehList = new ArrayList<>();
 
     EventHandle eventHandle;
     public void setOnCallListener(EventHandle eventHandle){ //接口对象构造(接口没有实例化,因为没有具体方法)
@@ -29,11 +26,6 @@ public class MyBroadcaseReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals("android.net.conn.CONNECTIVITY_CHANGE")) {
-            boolean isNetConnected = NetUtil.isNetConnected(context);
-//            for (int i = 0; i < ehList.size(); i++)
-//                ( ehList.get(i)).onNetChange(isNetConnected);
-        }
     }
 
 }

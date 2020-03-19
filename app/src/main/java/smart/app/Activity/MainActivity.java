@@ -106,8 +106,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 viewPager.setCurrentItem(2);
                 break;
             case R.id.net_status_bar_top:
-                // 跳转到网络设置
-                startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
+                // 跳转到 全部网络设置
+                startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
                 break;
             default:
                 break;

@@ -52,8 +52,8 @@ public class LoadActivity extends Activity {
         @Override
         public void handleMessage(Message msg) {
             LoadActivity activity = mActivity.get();
-            if (activity != null&&msg.obj!=null) {
-                Toast.makeText(activity, (String) msg.obj, Toast.LENGTH_LONG).show();
+            if (activity != null&&msg.obj!=null&&!msg.obj.toString().isEmpty()) {
+                Toast.makeText(activity, (String) msg.obj, Toast.LENGTH_SHORT).show();
                 super.handleMessage(msg);
             }
         }
@@ -71,6 +71,7 @@ public class LoadActivity extends Activity {
         load_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                message="";
                 user = new Userbean();
                 user.setName(username.getText().toString().trim());
                 user.setPassword(password.getText().toString().trim());
@@ -200,20 +201,4 @@ public class LoadActivity extends Activity {
         super.onPause();
     }
 
-//    public boolean isConnect(Context context) {
-//        // 获取手机所有连接管理对象（包括对wi-fi,net等连接的管理）
-//        try {
-//            NetworkInfo.State wifiState;
-//            NetworkInfo.State mobileState;
-//            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-//            wifiState = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
-//            mobileState = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
-//            if (NetworkInfo.State.CONNECTED == wifiState || NetworkInfo.State.CONNECTED == mobileState) {
-//                return true;
-//            }
-//        } catch (Exception e) {
-//            Log.v("error", e.toString());
-//        }
-//        return false;
-//    }
 }
