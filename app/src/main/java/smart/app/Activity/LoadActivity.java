@@ -2,6 +2,7 @@ package smart.app.Activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -22,11 +23,12 @@ import android.widget.Toast;
 import java.lang.ref.WeakReference;
 
 import smart.app.Network.HttpService;
+import smart.app.Network.NetUtil;
 import smart.app.R;
 import smart.app.bean.Institutebean;
 import smart.app.bean.Userbean;
 
-public class LoadActivity extends Activity implements View.OnClickListener {
+public class LoadActivity extends Activity {
     // UI Object
     private EditText username;
     private EditText password;
@@ -39,6 +41,7 @@ public class LoadActivity extends Activity implements View.OnClickListener {
     Userbean user;
     String message;
 
+
     private static class handler extends Handler {
         private final WeakReference<LoadActivity> mActivity;
 
@@ -49,8 +52,8 @@ public class LoadActivity extends Activity implements View.OnClickListener {
         @Override
         public void handleMessage(Message msg) {
             LoadActivity activity = mActivity.get();
-            if (activity != null) {
-                Toast.makeText(activity, (String) msg.obj, Toast.LENGTH_LONG).show();
+            if (activity != null&&msg.obj!=null&&!msg.obj.toString().isEmpty()) {
+                Toast.makeText(activity, (String) msg.obj, Toast.LENGTH_SHORT).show();
                 super.handleMessage(msg);
             }
         }
@@ -64,6 +67,61 @@ public class LoadActivity extends Activity implements View.OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.load_main);
         bindViews();
+
+        load_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                message="";
+                user = new Userbean();
+                user.setName(username.getText().toString().trim());
+                user.setPassword(password.getText().toString().trim());
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Looper.prepare();
+                        if (NetUtil.isNetConnected(getApplicationContext())) {
+                            // 验证密码、成功则跳转到MainActivity，否则提示用户名、密码不正确
+                            if (user.getName().equals("") || user.getPassword().equals("")) {
+                                message = "用户名或者密码不能为空";
+                            } else {
+                                try {
+                                    if (HttpService.authorize(username.getText().toString().trim(),
+                                            password.getText().toString().trim())) {
+                                        Institutebean gsonobject = HttpService.instituteInfo();
+                                        Intent intent = new Intent(LoadActivity.this, MainActivity.class);
+                                        Bundle bundle = new Bundle();
+                                        bundle.putSerializable("gsonobject", gsonobject);
+                                        intent.putExtras(bundle);
+                                        startActivity(intent);
+                                        if (checkBox1.isChecked()) {
+                                            //将用户输入的用户名存入储存中，键为userName
+                                            editor.putString("userName", user.getName());
+                                            //将用户输入的密码存入储存中，键为userName
+                                            editor.putString("userPassword", user.getPassword());
+                                            editor.commit();
+                                        }
+                                    } else {
+                                        message = "用户名或密码错误";
+                                        editor.remove("userName");
+                                        editor.remove("userPassword");
+                                        editor.commit();
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } else {
+                            message = "网络连接超时，请重新尝试";
+                        }
+                        Message msg = new Message();
+                        msg.obj = message;
+                        handler.sendMessage(msg);
+                    }
+                }).start();
+            }
+        });
+
     }
 
     // UI组件初始化与事件绑定
@@ -76,9 +134,8 @@ public class LoadActivity extends Activity implements View.OnClickListener {
         //获取preferences和editor对象
         preferences = getSharedPreferences("UserInfo", MODE_PRIVATE);
         editor = preferences.edit();
-        load_bt.setOnClickListener(this);
 
-        //设置默认不记住密码的状态
+        //设置默认不记住密码的状态   使用getBoolean()通过key检索不到，直接返回 defValue
         if (preferences.getBoolean("ISCHECK", false)) {
             checkBox1.setChecked(true);
             username.setText(preferences.getString("userName", ""));
@@ -135,60 +192,6 @@ public class LoadActivity extends Activity implements View.OnClickListener {
     }
 
     @Override
-    public void onClick(View v) {
-        user = new Userbean();
-        user.setName(username.getText().toString().trim());
-        user.setPassword(password.getText().toString().trim());
-        switch (v.getId()) {
-            case R.id.button1:
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Looper.prepare();
-                        if (isConnect(getApplicationContext())) {
-                            // 验证密码、成功则跳转到MainActivity，否则提示用户名、密码不正确
-                            if (user.getName().equals("") || user.getPassword().equals("")) {
-                                message = "用户名或者密码不能为空";
-                            } else {
-                                try {
-                                    if (HttpService.authorize(username.getText().toString().trim(),
-                                            password.getText().toString().trim())) {
-                                        Institutebean gsonobject = HttpService.instituteInfo();
-                                        Intent intent = new Intent(LoadActivity.this, MainActivity.class);
-                                        Bundle bundle = new Bundle();
-                                        bundle.putSerializable("gsonobject", gsonobject);
-                                        intent.putExtras(bundle);
-                                        startActivity(intent);
-                                        if (checkBox1.isChecked()) {
-                                            //将用户输入的用户名存入储存中，键为userName
-                                            editor.putString("userName", user.getName());
-                                            //将用户输入的密码存入储存中，键为userName
-                                            editor.putString("userPassword", user.getPassword());
-                                            editor.commit();
-                                        }
-                                    } else {
-                                        message = "用户名或密码错误";
-                                        editor.remove("userName");
-                                        editor.remove("userPassword");
-                                        editor.commit();
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        } else {
-                            message = "网络连接超时，请重新尝试";
-                        }
-                        Message msg = new Message();
-                        msg.obj = message;
-                        handler.sendMessage(msg);
-                    }
-                }).start();
-                break;
-        }
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
     }
@@ -198,20 +201,4 @@ public class LoadActivity extends Activity implements View.OnClickListener {
         super.onPause();
     }
 
-    public boolean isConnect(Context context) {
-        // 获取手机所有连接管理对象（包括对wi-fi,net等连接的管理）
-        try {
-            NetworkInfo.State wifiState;
-            NetworkInfo.State mobileState;
-            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            wifiState = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
-            mobileState = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
-            if (NetworkInfo.State.CONNECTED == wifiState || NetworkInfo.State.CONNECTED == mobileState) {
-                return true;
-            }
-        } catch (Exception e) {
-            Log.v("error", e.toString());
-        }
-        return false;
-    }
 }

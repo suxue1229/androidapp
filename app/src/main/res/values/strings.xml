@@ -40,4 +40,8 @@
     <string name="fg_update_nickname">昵称</string>
     <string name="fg_update_company">单位</string>
     <string name="fg_update_department">部门</string>
+
+    <!-- 网络 -->
+    <string name="net_error_tip">当前网络不可用，请检查你的网络设置</string>
+
 </resources>

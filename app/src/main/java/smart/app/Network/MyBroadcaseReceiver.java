@@ -3,22 +3,29 @@ package smart.app.Network;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo.State;
-import android.widget.Toast;
 
+import android.annotation.SuppressLint;
+
+import smart.app.Interface.EventHandle;
+
+
+@SuppressLint("NewApi")
 public class MyBroadcaseReceiver extends BroadcastReceiver {
+
+    EventHandle eventHandle;
+    public void setOnCallListener(EventHandle eventHandle){ //接口对象构造(接口没有实例化,因为没有具体方法)
+        this.eventHandle=eventHandle;
+    }
+    /*
+     * 触发接口的回调方法，相当于button的点击触发，在主类方法调用该方法触发回调
+     */
+    public void onCall(boolean isNetConnected){
+        eventHandle.onNetChange(isNetConnected);
+    }
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        State wifiState;
-        State mobileState;
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        wifiState = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
-        mobileState = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
-        if (wifiState != null && mobileState != null && State.CONNECTED != wifiState
-                && State.CONNECTED != mobileState) {
-            Toast.makeText(context, "网络连接超时，请重新尝试", Toast.LENGTH_SHORT).show();
-        }
     }
+
 }
