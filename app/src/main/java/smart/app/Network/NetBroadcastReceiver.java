@@ -5,13 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 
 import android.annotation.SuppressLint;
-import smart.app.Activity.MainActivity;
+import smart.app.Fragment.FragmentMap;
 
 
 @SuppressLint("NewApi")
 public class NetBroadcastReceiver extends BroadcastReceiver {
 
-    public EventHandle eventHandle= MainActivity.eventHandle;
+    public EventHandle eventHandle= FragmentMap.eventHandle;
 
     @Override
     public void onReceive(Context context, Intent intent) {

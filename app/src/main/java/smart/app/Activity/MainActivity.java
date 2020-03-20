@@ -1,6 +1,5 @@
 package smart.app.Activity;
 
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -9,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.Window;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.HashMap;
@@ -22,7 +20,7 @@ import smart.app.Network.NetBroadcastReceiver;
 import smart.app.R;
 
 
-public class MainActivity extends FragmentActivity implements View.OnClickListener,NetBroadcastReceiver.EventHandle{
+public class MainActivity extends FragmentActivity implements View.OnClickListener{
     //UI Object
     public TextView txt_map;
     public TextView txt_station;
@@ -35,25 +33,18 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     public HashMap<Integer, android.support.v4.app.Fragment> fragmentList = new HashMap<>();
     public FragmentAdapter adapter;
 
-    public static LinearLayout mNetErrorView;
-
-    public static NetBroadcastReceiver.EventHandle eventHandle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-        eventHandle = this;
         bindViews();
         txt_map.performClick();   //模拟一次点击，既进去后选择第一项
         initViewPager();
     }
     //UI组件初始化与事件绑定
     private void bindViews() {
-        mNetErrorView=findViewById(R.id.net_status_bar_top);
-        mNetErrorView.setOnClickListener(this);
-
         txt_map = findViewById(R.id.txt_map);
         txt_station = findViewById(R.id.txt_station);
         txt_myself = findViewById(R.id.txt_myself);
@@ -88,15 +79,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         txt_myself.setSelected(false);
     }
     @Override
-    public void onNetChange(boolean isNetConnected) {
-        //网络状态变化时的操作
-        if (!isNetConnected){
-            mNetErrorView.setVisibility(View.VISIBLE);
-        }else {
-            mNetErrorView.setVisibility(View.GONE);
-        }
-    }
-    @Override
     public void onClick(View v) {
         setSelected();
         switch (v.getId()) {
@@ -108,10 +90,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 break;
             case R.id.txt_myself:
                 viewPager.setCurrentItem(2);
-                break;
-            case R.id.net_status_bar_top:
-                // 跳转到 全部网络设置
-                startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
                 break;
             default:
                 break;

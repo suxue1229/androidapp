@@ -7,6 +7,7 @@
     android:layout_height="40dp"
     android:gravity="center_vertical"
     android:paddingLeft="10dp"
+    android:visibility="gone"
      >
 
     <TextView
@@ -22,11 +23,5 @@
         android:text="@string/net_error_tip"
         android:textColor="#ff2a271e"
         android:textSize="13.0sp" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="4.0dip"
-        android:src="@drawable/ic_keyboard_arrow_right_grey600_24dp" />
 
 </LinearLayout>

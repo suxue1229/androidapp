@@ -45,15 +45,18 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import smart.app.Adapter.ExtendableListViewAdapter;
 import smart.app.Network.HttpService;
 import smart.app.Activity.MainActivity;
+import smart.app.Network.NetBroadcastReceiver;
 import smart.app.R;
 import smart.app.bean.Devicebean;
 import smart.app.bean.Institutebean;
 
-public class FragmentMap extends Fragment implements View.OnClickListener{
+public class FragmentMap extends Fragment implements View.OnClickListener,NetBroadcastReceiver.EventHandle{
 
     // 定位相关
     LocationClient mLocClient;
@@ -81,6 +84,10 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
     ArrayList<String> provincename=new ArrayList<>();
     HashMap<String,ArrayList<Institutebean.datainfo>> station_province;
     private Devicebean devicebean;
+
+    public static NetBroadcastReceiver.EventHandle eventHandle;
+    public static LinearLayout mNetErrorView;
+    private Timer timer = new Timer();
 
     private static class MyHandler extends Handler {
         private final WeakReference<FragmentMap> mActivity;
@@ -143,6 +150,7 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         SDKInitializer.initialize(getActivity().getApplication());
         View view = inflater.inflate(R.layout.fg_map, container, false);
+        eventHandle=this;
         mainActivity = (MainActivity) getActivity();
         init(view);
         return view;
@@ -150,6 +158,9 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
 
     private void init(View view) {
         initMap(view);
+        mNetErrorView=view.findViewById(R.id.net_status_bar_top);
+        mNetErrorView.setOnClickListener(this);
+
         linearLayout = view.findViewById(R.id.linearLayout1);
         linearLayout.setVisibility(View.VISIBLE);
         search = view.findViewById(R.id.search);
@@ -159,7 +170,15 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
         mylocation.setOnClickListener(this);
         list.setOnClickListener(this);
     }
-
+    @Override
+    public void onNetChange(boolean isNetConnected) {
+        //网络状态变化时的操作
+        if (!isNetConnected){
+            mNetErrorView.setVisibility(View.VISIBLE);
+        }else {
+            mNetErrorView.setVisibility(View.GONE);
+        }
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -395,12 +414,18 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
         new Thread(new Runnable() {
             @Override
             public void run() {
+                //刷新数据
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
                 try {
                     institutebean = HttpService.instituteInfo();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 mHandler.post(sRunnable);
+                    }
+                }, 0, 30000/* 表示0毫秒之後，每隔5000毫秒執行一次 */);
             }
         }).start();
         if(infoUtil!=null){
