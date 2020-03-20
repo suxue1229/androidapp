@@ -52,7 +52,6 @@ import smart.app.Activity.MainActivity;
 import smart.app.R;
 import smart.app.bean.Devicebean;
 import smart.app.bean.Institutebean;
-import smart.app.bean.Sensorbean;
 
 public class FragmentMap extends Fragment implements View.OnClickListener{
 
@@ -227,6 +226,8 @@ public class FragmentMap extends Fragment implements View.OnClickListener{
                     mBaiduMap.setMyLocationEnabled(false);
                     islocation = true;
                 }
+                break;
+            default:
                 break;
         }
 

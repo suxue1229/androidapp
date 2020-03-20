@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.HashMap;
 
@@ -19,44 +18,41 @@ import smart.app.Adapter.FragmentAdapter;
 import smart.app.Fragment.FragmentMap;
 import smart.app.Fragment.FragmentMyself;
 import smart.app.Fragment.FragmentStation;
-import smart.app.Interface.EventHandle;
-import smart.app.Network.MyBroadcaseReceiver;
-import smart.app.Network.NetUtil;
+import smart.app.Network.NetBroadcastReceiver;
 import smart.app.R;
 
 
-public class MainActivity extends FragmentActivity implements View.OnClickListener{
+public class MainActivity extends FragmentActivity implements View.OnClickListener,NetBroadcastReceiver.EventHandle{
     //UI Object
     public TextView txt_map;
     public TextView txt_station;
     public TextView txt_myself;
 
     FragmentManager fManager;
-    private MyBroadcaseReceiver myBroadcaseReceiver;
+    public NetBroadcastReceiver netBroadcastReceiver;
 
     public ViewPager viewPager;
     public HashMap<Integer, android.support.v4.app.Fragment> fragmentList = new HashMap<>();
     public FragmentAdapter adapter;
 
+    public static LinearLayout mNetErrorView;
 
+    public static NetBroadcastReceiver.EventHandle eventHandle;
 
-    private LinearLayout mNetErrorView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        eventHandle = this;
         bindViews();
         txt_map.performClick();   //模拟一次点击，既进去后选择第一项
         initViewPager();
-
     }
-
     //UI组件初始化与事件绑定
     private void bindViews() {
         mNetErrorView=findViewById(R.id.net_status_bar_top);
         mNetErrorView.setOnClickListener(this);
-
 
         txt_map = findViewById(R.id.txt_map);
         txt_station = findViewById(R.id.txt_station);
@@ -91,7 +87,15 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         txt_station.setSelected(false);
         txt_myself.setSelected(false);
     }
-
+    @Override
+    public void onNetChange(boolean isNetConnected) {
+        //网络状态变化时的操作
+        if (!isNetConnected){
+            mNetErrorView.setVisibility(View.VISIBLE);
+        }else {
+            mNetErrorView.setVisibility(View.GONE);
+        }
+    }
     @Override
     public void onClick(View v) {
         setSelected();
@@ -116,38 +120,21 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     protected void onResume() {
-//         实例化BroadcastReceiver子类 & IntentFilter
-        if(myBroadcaseReceiver==null){
-            myBroadcaseReceiver = new MyBroadcaseReceiver();
+        // 实例化BroadcastReceiver子类 & IntentFilter
+        if(netBroadcastReceiver ==null){
+            netBroadcastReceiver = new NetBroadcastReceiver();
         }
         IntentFilter intentFilter = new IntentFilter();
         // 设置接收广播的类型
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         // 调用Context的registerReceiver（）方法进行动态注册
-        registerReceiver(myBroadcaseReceiver, intentFilter);
-
-
-        myBroadcaseReceiver.setOnCallListener(new EventHandle() {
-
-            @Override
-            public void onNetChange(boolean isNetConnected) {
-                if (!isNetConnected) {
-                    Toast.makeText(getApplicationContext(), R.string.net_error_tip, Toast.LENGTH_LONG).show();
-                    mNetErrorView.setVisibility(View.VISIBLE);
-                } else {
-                    mNetErrorView.setVisibility(View.GONE);
-                }
-            }
-        });
-
-        myBroadcaseReceiver.onCall(NetUtil.isNetConnected(this));  //真正触发回调的方法。
-
+        registerReceiver(netBroadcastReceiver, intentFilter);
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        unregisterReceiver(myBroadcaseReceiver);
+        unregisterReceiver(netBroadcastReceiver);
         super.onPause();
     }
 

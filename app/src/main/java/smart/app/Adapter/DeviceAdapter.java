@@ -51,18 +51,6 @@ public class DeviceAdapter extends BaseAdapter implements ListAdapter {
             vh.id_value = convertView
                     .findViewById(R.id.id_value);
             vh.id_unit = convertView.findViewById(R.id.id_unit);
-
-//            vh.id_image = convertView.findViewById(R.id.imageView);
-//            vh.id_image.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent intent = new Intent(context, LineChartActivity.class);
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString("sensorid", SensorId.get(position));
-//                    intent.putExtras(bundle);
-//                    context.startActivity(intent);
-//                }
-//            });
             convertView.setTag(vh);
         } else {
             vh = (ViewHolder) convertView.getTag();
@@ -86,6 +74,5 @@ public class DeviceAdapter extends BaseAdapter implements ListAdapter {
         TextView id_name;
         TextView id_value;
         TextView id_unit;
-//        ImageView id_image;
     }
 }

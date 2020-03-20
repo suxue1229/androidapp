@@ -37,7 +37,6 @@
             android:textColor="#95A1AA"
             android:textSize="16sp" />
     </LinearLayout>
-
         <ExpandableListView
             android:layoutDirection="rtl"
             android:id="@+id/expend_list"

@@ -19,7 +19,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import smart.app.Adapter.DeviceAdapter;
-import smart.app.Adapter.ExtendableListViewAdapter;
 import smart.app.Network.HttpService;
 import smart.app.Activity.MainActivity;
 import smart.app.R;
@@ -41,8 +40,6 @@ public class FragmentStation extends Fragment {
     HashMap<String,ArrayList<Sensorbean.sensorinfos.sensorinfo>> sensorlist = null;
     ArrayList<Sensorbean.sensorinfos.sensorinfo> status_info=null;
     ArrayList<Sensorbean.sensorinfos.sensorinfo> value_info=null;
-    ArrayList<String> Id = null;
-    ArrayList<String> title = null;
     private Timer timer = new Timer();
     MainActivity mainActivity;
 
@@ -68,8 +65,6 @@ public class FragmentStation extends Fragment {
         @Override
         public void run() {
             sensorlist = new HashMap<>();
-            title = new ArrayList<>();
-            Id = new ArrayList<>();
             status_info=new ArrayList<>();
             value_info=new ArrayList<>();
             sensorbean = new Sensorbean(devicebean);

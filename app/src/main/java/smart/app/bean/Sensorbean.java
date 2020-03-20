@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import smart.app.bean.Devicebean;
-
 public class Sensorbean implements Serializable {
 
     Devicebean devicebean;

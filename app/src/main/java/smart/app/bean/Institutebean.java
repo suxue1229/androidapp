@@ -9,9 +9,6 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import smart.app.Network.HttpService;
-
-
 public class Institutebean implements Serializable  {
     public int status;
     public String time;

@@ -15,21 +15,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import smart.app.Network.HttpService;
-import smart.app.bean.Devicebean;
 import smart.app.bean.Institutebean;
 import smart.app.R;
-import smart.app.bean.Sensorbean;
 
 public class ExtendableListViewAdapter extends BaseExpandableListAdapter {
     private Context mcontext;
     private LayoutInflater mLayoutInflater;
     private ArrayList<String> groups;
     private HashMap<String,ArrayList<Institutebean.datainfo>>  stations;
-    private Devicebean devicebean;
 
     public ExtendableListViewAdapter(Context mContext, ArrayList<String> groups, HashMap<String,ArrayList<Institutebean.datainfo>> stations) {
         this.mcontext=mContext;

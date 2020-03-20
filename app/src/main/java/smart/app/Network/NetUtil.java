@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 public class NetUtil {
+
     public static boolean isNetConnected(Context context) {
         boolean isNetConnected;
 
