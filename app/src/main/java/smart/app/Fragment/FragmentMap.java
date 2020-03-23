@@ -18,6 +18,7 @@ import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -173,6 +174,7 @@ public class FragmentMap extends Fragment implements View.OnClickListener,NetBro
     public void onNetChange(boolean isNetConnected) {
         //网络状态变化时的操作
         if (!isNetConnected){
+            Toast.makeText(getContext(),R.string.net_error_tip,Toast.LENGTH_SHORT).show();
             mNetErrorView.setVisibility(View.VISIBLE);
         }else {
             mNetErrorView.setVisibility(View.GONE);
