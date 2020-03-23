@@ -4,41 +4,15 @@
     android:layout_height="match_parent"
     tools:context=".Activity.MainActivity">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewpager_a"
+
+    <FrameLayout
+        android:id="@+id/framelayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="46dp">
-
-        <FrameLayout
-            android:id="@+id/framelayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/div_tab_bar"
-            android:layout_alignParentStart="true"
-            >
-            <fragment
-                android:id="@+id/fragment1"
-                android:name="smart.app.Fragment.FragmentMap"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:layout="@layout/fg_map" />
-
-            <fragment
-                android:id="@+id/fragment2"
-                android:name="smart.app.Fragment.FragmentStation"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:layout="@layout/fg_station" />
-
-            <fragment
-                android:id="@+id/fragment3"
-                android:name="smart.app.Fragment.FragmentMyself"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:layout="@layout/fg_me"/>
-        </FrameLayout>
-    </android.support.v4.view.ViewPager>
+        android:layout_above="@+id/div_tab_bar"
+        android:layout_alignParentStart="true"
+        >
+    </FrameLayout>
 
     <View
         android:id="@+id/div_tab_bar"

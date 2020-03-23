@@ -115,7 +115,7 @@ public class FragmentStation extends Fragment {
         datainfo = institutebean.data.get(0);
         Bundle bundle = getArguments();
         if (bundle != null) {
-            datainfo = (Institutebean.datainfo) mainActivity.fragmentList.get(1).getArguments().getSerializable("datainfo");
+            datainfo = (Institutebean.datainfo) bundle.getSerializable("datainfo");
         }
         if (datainfo != null) {
             txt_topbar.setText(datainfo.Name);

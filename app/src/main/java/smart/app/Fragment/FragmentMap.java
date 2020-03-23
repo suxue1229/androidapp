@@ -62,7 +62,7 @@ public class FragmentMap extends Fragment implements View.OnClickListener,NetBro
     LocationClient mLocClient;
     public MyLocationListenner myListener = new MyLocationListenner();
     MapView mMapView;
-    BaiduMap mBaiduMap;
+    public BaiduMap mBaiduMap;
 
     // UI相关
     LinearLayout linearLayout;////站点搜索输入框
@@ -113,7 +113,7 @@ public class FragmentMap extends Fragment implements View.OnClickListener,NetBro
             addOverlay(institutebean.data);
             station_province=new HashMap<>();
             for(int i=0;i<institutebean.data.size();i++){
-              final Institutebean.datainfo datainfo=institutebean.data.get(i);
+               final Institutebean.datainfo datainfo=institutebean.data.get(i);
                 String province_name;
                 if(institutebean.data.get(i).Address!=null &&!institutebean.data.get(i).Address.isEmpty()){
                     province_name=institutebean.data.get(i).getProvince(institutebean.data.get(i).Address);
@@ -144,7 +144,6 @@ public class FragmentMap extends Fragment implements View.OnClickListener,NetBro
 
         }
     };
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -359,13 +358,15 @@ public class FragmentMap extends Fragment implements View.OnClickListener,NetBro
                             search.setText(infoUtil.Name);
                             Bundle bundle1 = new Bundle();
                             bundle1.putSerializable("datainfo", infoUtil);
-                            mainActivity.fragmentList.get(1).setArguments(bundle1);
-                            mainActivity.viewPager.setAdapter(mainActivity.adapter);
-                            mainActivity.viewPager.setCurrentItem(1);
+
+                            mainActivity.fragmentStation = new FragmentStation();
+                            mainActivity.fragments.add(mainActivity.fragmentStation);
+                            mainActivity.fragmentStation.setArguments(bundle1);
+                            mainActivity.hideOthersFragment(mainActivity.fragmentStation, true);
+
                             mainActivity.txt_map.setSelected(false);
                             mainActivity.txt_station.setSelected(true);
                             mainActivity.txt_myself.setSelected(false);
-                            mainActivity.adapter.notifyDataSetChanged();
                         }
                     });
                     //显示infowindow
@@ -410,6 +411,17 @@ public class FragmentMap extends Fragment implements View.OnClickListener,NetBro
     }
 
     @Override
+    public void onHiddenChanged(boolean hidden){
+        if(!hidden){
+        // 改变地图状态，使地图显示在恰当的缩放大小
+        MapStatus mMapStatus = new MapStatus.Builder().zoom(6.0f).build();
+        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+        mBaiduMap.setMapStatus(mMapStatusUpdate);
+
+        }
+        super.onHiddenChanged(hidden);
+    }
+    @Override
     public void onStart(){
         new Thread(new Runnable() {
             @Override
@@ -428,10 +440,7 @@ public class FragmentMap extends Fragment implements View.OnClickListener,NetBro
                 }, 0, 30000/* 表示0毫秒之後，每隔5000毫秒執行一次 */);
             }
         }).start();
-        if(infoUtil!=null){
-            MapStatusUpdate msu = MapStatusUpdateFactory.newLatLng(infoUtil.getLatLng(infoUtil.Latitude, infoUtil.Longitude));
-            mBaiduMap.setMapStatus(msu);
-        }
+
         super.onStart();
     }
 

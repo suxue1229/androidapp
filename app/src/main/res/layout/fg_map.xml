@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="smart.app.Fragment.FragmentMap">
 
     <com.baidu.mapapi.map.MapView
         android:id="@+id/bmapView"
@@ -38,36 +40,33 @@
             android:textSize="16sp" />
     </LinearLayout>
     <include layout="@layout/net_error"/>
-        <ExpandableListView
-            android:layoutDirection="rtl"
-            android:id="@+id/expend_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/linearLayout1"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="5dp"
-            android:animateLayoutChanges="true"
-            android:background="#E0E0E0"
-            android:groupIndicator="@null"
-            android:visibility="gone"
-            ></ExpandableListView>
+    <ExpandableListView
+        android:layoutDirection="rtl"
+        android:id="@+id/expend_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearLayout1"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:animateLayoutChanges="true"
+        android:background="#E0E0E0"
+        android:groupIndicator="@null"
+        android:visibility="gone"
+        ></ExpandableListView>
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="70dp"
-        android:layout_marginLeft="5dp">
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="5dp"
+        android:layout_marginStart="5dp">
 
         <android.support.v7.widget.AppCompatImageView
             android:id="@+id/mylocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
             android:background="@color/bg_white"
             app:srcCompat="@android:drawable/ic_menu_mylocation" />
     </RelativeLayout>
-</RelativeLayout>
+</FrameLayout>

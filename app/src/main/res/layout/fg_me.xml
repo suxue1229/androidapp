@@ -1,51 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F9F9FB"
-    android:orientation="vertical">
-
-    <RelativeLayout
-        android:id="@+id/ly_top_bar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@color/bg_topbar">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_alignParentBottom="true"
-            android:background="@color/div_white" />
-
-        <TextView
-            android:id="@+id/txt_topbar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:gravity="center"
-            android:text="@string/fg_tab_me"
-            android:textColor="@color/text_topbar"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/edit"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:gravity="center"
-            android:layout_marginEnd="12dp"
-            android:textColor="@color/text_topbar"
-            android:textSize="15sp"
-            android:text="@string/fg_me_edit"
-            tools:ignore="RelativeOverlap" />
-    </RelativeLayout>
+    tools:context="smart.app.Fragment.FragmentMyself">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="48dp"
         android:orientation="vertical">
 
         <android.support.v4.widget.SwipeRefreshLayout
@@ -233,4 +197,40 @@
         </android.support.v4.widget.SwipeRefreshLayout>
 
     </LinearLayout>
-</LinearLayout>
+    <RelativeLayout
+        android:id="@+id/ly_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/bg_topbar">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/div_white" />
+
+        <TextView
+            android:id="@+id/txt_topbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:gravity="center"
+            android:text="@string/fg_tab_me"
+            android:textColor="@color/text_topbar"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/edit"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:layout_marginEnd="12dp"
+            android:textColor="@color/text_topbar"
+            android:textSize="15sp"
+            android:text="@string/fg_me_edit"
+            tools:ignore="RelativeOverlap" />
+    </RelativeLayout>
+</FrameLayout>

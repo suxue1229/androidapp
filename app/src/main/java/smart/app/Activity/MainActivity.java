@@ -3,16 +3,19 @@ package smart.app.Activity;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 
-import java.util.HashMap;
 
-import smart.app.Adapter.FragmentAdapter;
+import java.util.ArrayList;
+import java.util.List;
+
 import smart.app.Fragment.FragmentMap;
 import smart.app.Fragment.FragmentMyself;
 import smart.app.Fragment.FragmentStation;
@@ -26,12 +29,17 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     public TextView txt_station;
     public TextView txt_myself;
 
-    FragmentManager fManager;
-    public NetBroadcastReceiver netBroadcastReceiver;
 
-    public ViewPager viewPager;
-    public HashMap<Integer, android.support.v4.app.Fragment> fragmentList = new HashMap<>();
-    public FragmentAdapter adapter;
+    public List<Fragment> fragments;
+    public FragmentManager fManager;
+    public FragmentTransaction transition;
+    FragmentMap fragmentMap;
+    public FragmentStation fragmentStation;
+    FragmentMyself fragmentMyself;
+
+
+
+    public NetBroadcastReceiver netBroadcastReceiver;
 
 
     @Override
@@ -40,36 +48,28 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         bindViews();
-        txt_map.performClick();   //模拟一次点击，既进去后选择第一项
-        initViewPager();
     }
     //UI组件初始化与事件绑定
     private void bindViews() {
         txt_map = findViewById(R.id.txt_map);
         txt_station = findViewById(R.id.txt_station);
         txt_myself = findViewById(R.id.txt_myself);
-        viewPager = findViewById(R.id.viewpager_a);
-        fManager = getSupportFragmentManager();
-        //填充数据
-        fragmentList.put(0, new FragmentMap());
-        fragmentList.put(1, new FragmentStation());
-        fragmentList.put(2, new FragmentMyself());
 
-        adapter = new FragmentAdapter(fManager, fragmentList);
-        viewPager.setOffscreenPageLimit(3);
-        viewPager.setAdapter(adapter);
+
+        fManager = getSupportFragmentManager();
+        fragments = new ArrayList<>();
+
+        fragmentMap = new FragmentMap();
+        fragments.add(fragmentMap);
+        txt_map.performClick();   //模拟一次点击，既进去后选择第一项
+        hideOthersFragment(fragmentMap, true);
+        txt_map.setSelected(true);
 
         txt_map.setOnClickListener(this);
         txt_station.setOnClickListener(this);
         txt_myself.setOnClickListener(this);
 
 
-    }
-    public void initViewPager() {
-        viewPager.addOnPageChangeListener(new ViewPagetOnPagerChangedLisenter());
-        viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(0);
-        txt_map.setSelected(true);
     }
 
     //重置所有文本的选中状态
@@ -83,13 +83,28 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         setSelected();
         switch (v.getId()) {
             case R.id.txt_map:
-                viewPager.setCurrentItem(0);
+                hideOthersFragment(fragmentMap, false);
+                txt_map.setSelected(true);
                 break;
             case R.id.txt_station:
-                viewPager.setCurrentItem(1);
+                if (fragmentStation == null) {
+                    fragmentStation = new FragmentStation();
+                    fragments.add(fragmentStation);
+                    hideOthersFragment(fragmentStation, true);
+                } else {
+                    hideOthersFragment(fragmentStation, false);
+                }
+                txt_station.setSelected(true);
                 break;
             case R.id.txt_myself:
-                viewPager.setCurrentItem(2);
+             if (fragmentMyself == null) {
+                 fragmentMyself = new FragmentMyself();
+                fragments.add(fragmentMyself);
+                hideOthersFragment(fragmentMyself, true);
+                } else {
+                    hideOthersFragment(fragmentMyself, false);
+                }
+                txt_myself.setSelected(true);
                 break;
             default:
                 break;
@@ -137,5 +152,24 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         @Override
         public void onPageScrollStateChanged(int state) {
         }
+    }
+    /**
+     * 动态显示Fragment
+     *
+     * @param showFragment 要增加的fragment
+     * @param add          true：增加fragment；false：切换fragment
+     */
+    public void hideOthersFragment(Fragment showFragment, boolean add) {
+        transition = fManager.beginTransaction();
+        if (add)
+            transition.add(R.id.framelayout,showFragment);
+        for (Fragment fragment : fragments) {
+            if (showFragment.equals(fragment)) {
+                transition.show(fragment);
+            } else {
+                transition.hide(fragment);
+            }
+        }
+        transition.commit();
     }
 }
